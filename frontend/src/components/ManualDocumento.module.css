@@ -1,0 +1,240 @@
+.barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.barra span {
+  font-size: 0.9em;
+}
+
+.indice {
+  border: 1px solid #4c4c4c;
+  border-radius: 10px;
+  padding: 12px 20px 16px;
+  margin: 20px 0 30px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.indice h2 {
+  margin: 0 0 10px;
+  font-size: 0.85em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #b9c4cf;
+}
+
+.indice ol {
+  margin: 0;
+  padding-left: 22px;
+  columns: 2;
+  column-gap: 32px;
+}
+
+.indice li {
+  margin: 4px 0;
+  break-inside: avoid;
+}
+
+.indice a {
+  color: #8ab4f8;
+  text-decoration: none;
+}
+
+.indice a:hover {
+  text-decoration: underline;
+}
+
+.documento {
+  line-height: 1.65;
+}
+
+.documento > h1:first-child {
+  margin-top: 0;
+}
+
+.documento h1 {
+  font-size: 1.9em;
+  line-height: 1.2;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #555;
+}
+
+.documento h2 {
+  margin-top: 2.2em;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #444;
+  font-size: 1.45em;
+  scroll-margin-top: 20px;
+}
+
+.documento h3 {
+  margin-top: 1.8em;
+  font-size: 1.15em;
+  scroll-margin-top: 20px;
+}
+
+.documento p {
+  margin: 10px 0;
+}
+
+.documento ul,
+.documento ol {
+  padding-left: 24px;
+}
+
+.documento li {
+  margin: 4px 0;
+}
+
+.documento strong {
+  color: #fff;
+}
+
+.documento a {
+  color: #8ab4f8;
+}
+
+.documento table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0 22px;
+  font-size: 0.95em;
+}
+
+.documento table th,
+.documento table td {
+  border: 1px solid #555;
+  padding: 7px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.documento table thead th {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.documento code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.88em;
+}
+
+.documento pre {
+  margin: 14px 0;
+  padding: 12px 14px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #1b1b1b;
+  overflow-x: auto;
+}
+
+.documento pre code {
+  padding: 0;
+  background: none;
+  font-size: 0.9em;
+}
+
+.documento blockquote {
+  margin: 16px 0;
+  padding: 8px 16px;
+  border-left: 4px solid #1976d2;
+  border-radius: 0 6px 6px 0;
+  background: rgba(25, 118, 210, 0.12);
+}
+
+.documento blockquote p {
+  margin: 0;
+}
+
+.documento hr {
+  margin: 28px 0;
+  border: none;
+  border-top: 1px solid #4a4a4a;
+}
+
+@media (max-width: 640px) {
+  .indice {
+    padding: 10px 14px 12px;
+  }
+
+  .indice ol {
+    columns: 1;
+    padding-left: 18px;
+  }
+
+  .documento {
+    font-size: 0.95em;
+  }
+
+  .documento table {
+    font-size: 0.85em;
+  }
+
+  .documento table th,
+  .documento table td {
+    padding: 5px 7px;
+    overflow-wrap: anywhere;
+  }
+
+  .documento pre {
+    font-size: 0.85em;
+  }
+}
+
+@media print {
+  .barra {
+    display: none;
+  }
+
+  .indice {
+    border-color: #bbb;
+    background: none;
+  }
+
+  .indice h2,
+  .documento,
+  .documento h1,
+  .documento h2,
+  .documento h3,
+  .documento strong,
+  .documento a {
+    color: #000;
+  }
+
+  .documento h1,
+  .documento h2,
+  .documento hr {
+    border-color: #999;
+  }
+
+  .documento table th,
+  .documento table td {
+    border-color: #888;
+  }
+
+  .documento table thead th {
+    background: #eee;
+  }
+
+  .documento code {
+    background: #f0f0f0;
+  }
+
+  .documento pre {
+    border-color: #bbb;
+    background: #f6f6f6;
+    color: #111;
+  }
+
+  .documento blockquote {
+    border-left-color: #555;
+    background: #f4f4f4;
+  }
+}

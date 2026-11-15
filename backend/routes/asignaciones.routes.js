@@ -1,69 +1,142 @@
 const express = require("express");
 const router = express.Router();
+
 const db = require("../config/db");
+const auth = require("../middleware/auth");
 
-router.get("/buscar", async(req,res) => {
+router.get("/buscar", auth, async (req, res) => {
+    try {
+        const { paciente_id, trabajador_id } = req.query;
 
-    try{
-
-        const {paciente_id,prestador_id} = req.query;
-
-        // buscar si existe
-        const [rows] = await db.query(`SELECT id
-            FROM asignaciones
-            WHERE paciente_id = ?
-            AND prestador_id = ?
-        LIMIT 1`,[paciente_id,prestador_id]);
-
-        if(rows.length > 0) {
-            return res.json(rows[0]);
+        if (!paciente_id || !trabajador_id) {
+            return res.status(400).json({
+                error: "paciente_id y trabajador_id son obligatorios"
+            });
         }
 
-        // 🔹 SI NO EXISTE → crear asignación automáticamente
-        const [result] = await db.query(`INSERT INTO asignaciones  
-            (paciente_id,prestador_id,fecha_inicio,activo)
-        VALUES (?,?,NOW(),1)`,[paciente_id,prestador_id]);
+        const [rows] = await db.query(
+            `SELECT id
+             FROM asignaciones
+             WHERE paciente_id = ?
+               AND trabajador_id = ?
+               AND activo = 1
+             LIMIT 1`,
+            [paciente_id, trabajador_id]
+        );
 
-        res.json({id: result.insertId});
+        if (rows.length === 0) {
+            return res.status(404).json({
+                error: "No existe una asignación activa"
+            });
+        }
 
-    }catch(error){
-        res.status(500).json({error:error.message});
+        res.json(rows[0]);
+    } catch (error) {
+        console.error("asignaciones/buscar:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
-
 });
 
-router.get("/prestadores", async (req,res)=>{
+router.post(
+    "/buscar-o-crear",
+    auth,
+    auth.requireRole("admin", "coordinador"),
+    async (req, res) => {
+        try {
+            const { paciente_id, trabajador_id } = req.body || {};
 
-    try {
-        const {paciente_id} = req.query;
+            if (!paciente_id || !trabajador_id) {
+                return res.status(400).json({
+                    error: "paciente_id y trabajador_id son obligatorios"
+                });
+            }
 
-        // 🔹 prestadores asignados
-        const [asignados] = await db.query(`
-        SELECT pr.id, pr.nombre, 'asignado' as tipo
-        FROM asignaciones a
-        JOIN prestadores pr ON a.prestador_id = pr.id
-        WHERE a.paciente_id = ?
-        `,[paciente_id]);
+            const [pacientes] = await db.query(
+                "SELECT id FROM pacientes WHERE id = ?",
+                [paciente_id]
+            );
 
-        // 🔹 todos los prestadores activos
-        const [todos] = await db.query(`
-        SELECT id, nombre, 'disponible' as tipo
-        FROM prestadores
-        WHERE activo = 1
-        `);
+            if (pacientes.length === 0) {
+                return res.status(404).json({
+                    error: "Paciente no encontrado"
+                });
+            }
 
-        // 🔹 eliminar duplicados
-        const idsAsignados = asignados.map(p=>p.id);
+            const [trabajadores] = await db.query(
+                "SELECT id FROM trabajadores WHERE id = ? AND activo = 1",
+                [trabajador_id]
+            );
 
-        const disponibles = todos.filter(p=>!idsAsignados.includes(p.id));
+            if (trabajadores.length === 0) {
+                return res.status(400).json({
+                    error: "Trabajador no encontrado o inactivo"
+                });
+            }
 
-        // 🔹 combinar resultados
-        res.json([...asignados,...disponibles]);
+            const [result] = await db.query(
+                `INSERT INTO asignaciones
+                    (trabajador_id, paciente_id, activo, fecha_inicio)
+                 VALUES (?, ?, 1, CURDATE())
+                 ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)`,
+                [trabajador_id, paciente_id]
+            );
 
-    } catch(error) {
-        res.status(500).json({error:error.message});
+            res.json({ id: result.insertId });
+        } catch (error) {
+            console.error("asignaciones/buscar-o-crear:", error);
+            res.status(500).json({ error: "Error interno del servidor" });
+        }
     }
+);
 
+router.get("/trabajadores", auth, async (req, res) => {
+    try {
+        const { paciente_id } = req.query;
+
+        if (!paciente_id) {
+            return res.status(400).json({
+                error: "paciente_id es obligatorio"
+            });
+        }
+
+        const [asignados] = await db.query(
+            `SELECT t.id,
+                    t.nombre,
+                    c.nombre AS cargo,
+                    'asignado' AS tipo
+             FROM asignaciones a
+             JOIN trabajadores t ON t.id = a.trabajador_id
+             JOIN cargos c ON c.id = t.cargo_id
+             WHERE a.paciente_id = ?
+               AND a.activo = 1
+             ORDER BY t.nombre`,
+            [paciente_id]
+        );
+
+        const [disponibles] = await db.query(
+            `SELECT t.id,
+                    t.nombre,
+                    c.nombre AS cargo,
+                    'disponible' AS tipo
+             FROM trabajadores t
+             JOIN cargos c ON c.id = t.cargo_id
+             WHERE t.activo = 1
+               AND c.nombre NOT IN ('Coordinador', 'Programador')
+               AND t.id NOT IN (
+                    SELECT trabajador_id
+                    FROM asignaciones
+                    WHERE paciente_id = ?
+                      AND activo = 1
+               )
+             ORDER BY t.nombre`,
+            [paciente_id]
+        );
+
+        res.json([...asignados, ...disponibles]);
+    } catch (error) {
+        console.error("asignaciones/trabajadores:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
 });
 
 module.exports = router;

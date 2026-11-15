@@ -1,0 +1,9 @@
+.auditScroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.auditTable {
+  min-width: 640px;
+  font-size: 0.85em;
+}

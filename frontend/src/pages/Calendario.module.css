@@ -1,0 +1,43 @@
+.container {
+  width: 100%;
+  min-width: 0;
+  max-width: 800px;
+  padding: 10px;
+  margin: 10px auto;
+  border: 2px solid #333;
+  border-radius: 8px;
+}
+
+.calendarioScroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.calendario {
+  min-width: 620px;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 6px;
+  }
+
+  .container h2 {
+    font-size: 1.2em;
+  }
+
+  .calendario :global(.fc-toolbar.fc-header-toolbar) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .calendario :global(.fc-toolbar-title) {
+    font-size: 1.1em;
+  }
+
+  .calendario :global(.fc-button) {
+    padding: 4px 8px;
+    font-size: 0.85em;
+  }
+}

@@ -1,0 +1,82 @@
+.toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.toolbar label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85em;
+  color: #555;
+}
+
+.toolbar select {
+  padding: 8px 10px;
+  border: 1px solid #999;
+  border-radius: 6px;
+  font-size: 1em;
+  font-family: inherit;
+}
+
+.tablaContenedor {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tablaContenedor table {
+  min-width: 760px;
+  margin-top: 16px;
+}
+
+.accionesCelda {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.accionesCelda button {
+  font-size: 0.85em;
+  padding: 6px 10px;
+}
+
+.detalleScroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.detailTable {
+  margin-top: 4px;
+  min-width: 620px;
+  background: #fafafa;
+}
+
+.detailTable th,
+.detailTable td {
+  font-size: 0.9em;
+}
+
+@media (max-width: 640px) {
+  .toolbar {
+    gap: 10px;
+  }
+
+  .toolbar label {
+    flex: 1 1 120px;
+  }
+
+  .toolbar select {
+    width: 100%;
+  }
+
+  .toolbar > button {
+    width: 100%;
+  }
+
+  .tablaContenedor table {
+    min-width: 720px;
+  }
+}

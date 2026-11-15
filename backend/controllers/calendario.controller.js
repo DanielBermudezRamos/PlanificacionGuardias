@@ -1,39 +1,56 @@
+const dayjs = require("dayjs");
 const db = require("../config/db");
+const { aFechaSql } = require("../utils/fechas");
 
 exports.getCalendario = async (req, res) => {
-
     try {
+        const hoy = dayjs();
 
-        const { desde, hasta } = req.query;
+        const desde = aFechaSql(req.query.desde) ||
+            hoy.startOf("month").format("YYYY-MM-DD HH:mm:ss");
+        const hasta = aFechaSql(req.query.hasta) ||
+            hoy.add(1, "month").startOf("month").format("YYYY-MM-DD HH:mm:ss");
 
-        const [rows] = await db.query(`SELECT 
-        h.id,
-        h.fecha_hora_entrada,
-        h.fecha_hora_salida,
-        pr.nombre prestador,
-        p.nombre paciente
+        const condiciones = [
+            "fecha_hora_entrada >= ?",
+            "fecha_hora_entrada < ?"
+        ];
+        const params = [desde, hasta];
 
-        FROM horarios_programados h
+        if (req.usuario.rol === "prestador") {
+            if (!req.usuario.trabajador_id) {
+                return res.status(403).json({
+                    error: "Tu usuario no está vinculado a un trabajador"
+                });
+            }
 
-        JOIN asignaciones a
-        ON h.asignacion_id = a.id
+            condiciones.push("trabajador_id = ?");
+            params.push(req.usuario.trabajador_id);
+        }
 
-        JOIN prestadores pr
-        ON a.prestador_id = pr.id
-
-        JOIN pacientes p
-        ON a.paciente_id = p.id
-
-        WHERE h.fecha_hora_entrada BETWEEN ? AND ?
-
-        ORDER BY h.fecha_hora_entrada`, [desde, hasta]);
+        const [rows] = await db.query(
+            `SELECT id,
+                    trabajador_id,
+                    trabajador_nombre AS prestador,
+                    paciente_id,
+                    paciente_nombre AS paciente,
+                    fecha_hora_entrada,
+                    fecha_hora_salida,
+                    horas_estimadas,
+                    fecha_hora_entrada_real,
+                    fecha_hora_salida_real,
+                    horas_reales,
+                    diferencia_horas,
+                    estado_cumplimiento
+             FROM vista_horarios_completa
+             WHERE ${condiciones.join(" AND ")}
+             ORDER BY fecha_hora_entrada`,
+            params
+        );
 
         res.json(rows);
-
     } catch (error) {
-
-        res.status(500).json({ error: error.message });
-
+        console.error("getCalendario:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
-
 };

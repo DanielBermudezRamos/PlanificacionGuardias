@@ -1,0 +1,27 @@
+.authCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 360px;
+  margin: 60px auto;
+  text-align: left;
+}
+
+.authCard input {
+  padding: 10px 12px;
+  border: 1px solid #999;
+  border-radius: 6px;
+  font-size: 1em;
+  font-family: inherit;
+}
+
+.authCard button {
+  margin-top: 6px;
+}
+
+@media (max-width: 560px) {
+  .authCard {
+    margin: 24px auto;
+    padding: 0 4px;
+  }
+}

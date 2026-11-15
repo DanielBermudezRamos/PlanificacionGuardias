@@ -1,0 +1,119 @@
+.contenedor {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.contenedor table {
+  min-width: 680px;
+  margin-top: 16px;
+}
+
+.contenedor table th {
+  border-color: #4a4a4a;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #b9c4cf;
+}
+
+.contenedor table td {
+  border-color: #3a3a3a;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.accionesFila {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.accionesFila button {
+  padding: 6px 10px;
+  font-size: 0.85em;
+}
+
+@media (max-width: 980px) {
+  .contenedor {
+    overflow: visible;
+  }
+
+  .contenedor table {
+    min-width: 0;
+    margin-top: 12px;
+  }
+
+  .contenedor thead {
+    display: none;
+  }
+
+  .contenedor tbody,
+  .contenedor tr {
+    display: block;
+  }
+
+  .contenedor tr {
+    margin-bottom: 12px;
+    padding: 8px 14px;
+    border: 1px solid #4a4a4a;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .contenedor table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: right;
+  }
+
+  .contenedor table td:last-child {
+    border-bottom: none;
+  }
+
+  .contenedor table td::before {
+    content: attr(data-label);
+    flex: 0 0 auto;
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #b9c4cf;
+    text-align: left;
+  }
+
+  .accionesFila {
+    justify-content: flex-end;
+    padding-top: 10px;
+  }
+
+  .accionesFila button {
+    flex: 1 1 110px;
+  }
+}
+
+@media (max-width: 400px) {
+  .contenedor table td {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    text-align: left;
+  }
+
+  .contenedor table td::before {
+    font-size: 0.75em;
+  }
+
+  .accionesFila {
+    align-items: stretch;
+  }
+
+  .accionesFila button {
+    flex: 1 1 100%;
+  }
+}
